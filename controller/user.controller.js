@@ -2,6 +2,7 @@ const db = require("../model/index")
 const User = db.users
 let jwt = require('jsonwebtoken')
 let config = require("../config")
+const justification = require("./justify")
 
 exports.create = (req, res) => {
     if(!req.body.firstName|
@@ -43,8 +44,7 @@ exports.find = (req, res) => {
     .then(user => {
         if(user === null){
             console.log("email not found")
-            res.status(401)
-            res.send("email not found")
+            res.status(401).send({ auth: false, message: "Email not found" })
         }
         else{
             console.log("connected")
@@ -62,4 +62,17 @@ exports.find = (req, res) => {
     .finally(() =>{
         return true
     })
+}
+
+exports.justify = (req, res) => {
+    if(!req.body.text){
+        res.status(400).send({
+            message: "Insert text"
+        })
+        return
+    }
+    else{
+        let result = justification.justify (req.body.text, 80)
+        res.send(result)
+    }
 }
